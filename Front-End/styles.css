@@ -3,6 +3,16 @@ body {
 }
 
 h1 {
-  color: black;
-  text-align: center;
+    text-align: center;
+}
+
+label {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+    margin-bottom: 5px;
+}
+
+form {
+    text-align: center;
 }
