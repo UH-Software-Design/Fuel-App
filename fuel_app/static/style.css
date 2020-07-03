@@ -16,13 +16,13 @@
     padding: 0 30px;
 }
 
-input:invalid {
+/* input:invalid {
     border: 2px dashed red;
   }
 
 input:invalid:required {
     background-image: linear-gradient(to right, pink, lightgreen);
-  }
+  } */
 
 .navbar a {
     color: #fff;
