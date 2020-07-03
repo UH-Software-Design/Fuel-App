@@ -16,10 +16,14 @@
         <div class="navbar">
             <nav>
                 <ul>
-                    <li><a href="{{url_for('home')}}">Home</a></li>
+                    {% if current_user.is_authenticated %}
                     <li><a href="{{url_for('profile')}}">Profile</a></li>
                     <li><a href="{{url_for('quote')}}">quote</a></li>
+                    <li><a href="{{url_for('logout')}}">Log out</a></li>
                     <li><a href="{{url_for('registration')}}">History</a></li>
+                    {% else %}
+                    <li><a href="{{url_for('home')}}">Home</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

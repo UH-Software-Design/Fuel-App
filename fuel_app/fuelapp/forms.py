@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DecimalField, HiddenField, SelectField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp
-
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp, ValidationError
+from fuelapp.models import User
 
 class registrationForm(FlaskForm):
     username = StringField('Username', validators =[DataRequired(), Length(min = 2, max = 25)])
@@ -10,6 +10,15 @@ class registrationForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired(), Length(min = 6, max = 30)])
     confirm_password = PasswordField('Confirm Password', validators = [DataRequired(), Length(min = 6, max = 30), EqualTo('password')])
     submit = SubmitField('Register')
+
+    def validate_username(self, username):
+        user =User.query.filter_by(username = username.data).first()
+        if user:
+            raise ValidationError('Username is already taken')
+    def validate_email(self, email):
+        user =User.query.filter_by(email = email.data).first()
+        if user:
+            raise ValidationError('email is already in use')
 
 class loginForm(FlaskForm):
     username = StringField('Username', validators =[DataRequired(), Length(min = 2, max = 25)])
