@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, flash, redirect
-from forms import registrationForm, loginForm
+from forms import registrationForm, loginForm, quoteForm, profileForm
 app = Flask (__name__)
 app.config['SECRET_KEY'] = '9e844a33fa6dff17d7f178b253442242614bfb6c189d6deed2830730d50f1ba5f80ee4c844364'
 
@@ -26,13 +26,25 @@ def registration():
 @app.route('/quote', methods = ['GET', 'POST'])
 def quote():
     form = quoteForm()
-    
+    if form.validate_on_submit():
+        flash('Here is your quote. Enjoy!', 'success')
+    else:
+        flash('Please provide valid input', 'danger')
     return render_template('quote.html', title = 'Get your quote', form = form)
+
+@app.route('/profile', methods = ['GET', 'POST'])
+def profile():
+    form = profileForm()
+    if form.validate_on_submit():
+        flash('Your information has been saved', 'success')
+    else:
+        flash('Please provide valid input', 'danger')
+    return render_template('profile.html', title = 'Personalize', form = form)
 
 
 
 #code below works for old html code.
-(''')
+('''
 @app.route('/')
 @app.route("/index.html")
 def home():

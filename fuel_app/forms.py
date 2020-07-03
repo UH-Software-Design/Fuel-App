@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DecimalField, HiddenField, SelectField
+from wtforms.fields.html5 import DateField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp
 
 
 class registrationForm(FlaskForm):
@@ -15,3 +16,20 @@ class loginForm(FlaskForm):
     password = PasswordField('Password', validators = [DataRequired(), Length(min = 6, max = 30)])
     remember = BooleanField('Remember me')
     submit = SubmitField('Login')
+
+class quoteForm(FlaskForm):
+    gallonsRequested = IntegerField('Gallons requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)])
+    deliveryDate = DateField('Delivery date', format = '%Y-%m-%d')
+    deliveryAddress = StringField('Delivery address: ', validators = [Optional()])
+    rate = DecimalField('Price per gallon: ')
+    total = DecimalField('Total amount due: ')
+    submit = SubmitField('Calculate total')
+
+class profileForm(FlaskForm):
+    name = StringField('Name: ', validators = [DataRequired(), Length(min=12, max =50)])#, Regexp('^[a-zA-Z]+$)')])
+    address1 = StringField('Address 1: ', validators = [DataRequired(), Length(min =12, max = 100)])
+    address2 = StringField('Address 2: ', validators = [Optional()])
+    city = StringField('City: ', validators = [DataRequired(), Length(min=2, max =30)])#, Regexp('^[a-zA-Z]+$)')])
+    state = SelectField ('State: ', validators = [DataRequired()],choices = [('Texas', 'TX'), ('California', 'CA'), ('New York', 'NY')])
+    zipcode = IntegerField('Zip Code: ', validators= [DataRequired()])
+    submit = SubmitField('Submit')
