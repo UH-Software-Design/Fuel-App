@@ -56,7 +56,7 @@ def profile():
     if form.validate_on_submit():
         #broken, needs work. Entry is overwriten.
         info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-        ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id= current_user)
+        ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObj= current_user)
         db.session.add(info)
         db.session.commit()
         flash('Your information has been saved', 'success')
