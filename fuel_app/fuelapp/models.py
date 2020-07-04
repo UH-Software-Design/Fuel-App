@@ -16,9 +16,9 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
-class Quote(db.Model):
+class QuoteHistory(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    gallons = db.Column(db.Integer, nullable = False)
+    gallonsRequest = db.Column(db.Integer, nullable = False)
     deliveryDate = db.Column(db.Date, nullable = False)
     address = db.Column(db.String(200), nullable =False)
     rate = db.Column(db.Float, nullable = False)
@@ -40,4 +40,4 @@ class Profile(db.Model):
     profile_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}')"
+        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}')"m
