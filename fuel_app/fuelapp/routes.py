@@ -1,8 +1,8 @@
-from flask import render_template, url_for, flash, redirect
+from flask import render_template, url_for, flash, redirect, request
 from fuelapp import app, db, bcrypt
 from fuelapp.forms import registrationForm, loginForm, quoteForm, profileForm
 from fuelapp.models import User, Profile, Quote
-from flask_login import login_user, current_user, logout_user
+from flask_login import login_user, current_user, logout_user, login_required
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -15,7 +15,8 @@ def home():
         user = User.query.filter_by(username = form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember = form.remember.data)
-            return redirect(url_for('profile'))
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('profile'))
         else:
             flash('Login failed. Check username and password', 'danger')
     return render_template('home.html', title = 'Login', form = form)
@@ -35,21 +36,33 @@ def registration():
     return render_template('register.html', title = 'Register', form = form)
 
 @app.route('/quote', methods = ['GET', 'POST'])
+@login_required
 def quote():
     form = quoteForm()
-    # if form.validate_on_submit():
-    #     flash('Here is your quote. Enjoy!', 'success')
-    # else:
-    #     flash('Please provide valid input', 'danger')
+    if form.validate_on_submit():
+        toadd = Quote(gallons = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
+                    ,address = form.deliveryAddress.data, rate = form.rate.data
+                    ,total =form.total.data, quoteid= current_user)
+        db.session.add(toadd)
+        db.session.commit()
+        flash('okaaay')
+        return redirect(url_for('quote'))
     return render_template('quote.html', title = 'Get your quote', form = form)
 
 @app.route('/profile', methods = ['GET', 'POST'])
+@login_required
 def profile():
     form = profileForm()
-    # if form.validate_on_submit():
-    #     flash('Your information has been saved', 'success')
-    # else:
-    #     flash('Please provide valid input', 'danger')
+    if form.validate_on_submit():
+        #broken, needs work. Entry is overwriten.
+        info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+        ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, profileid= current_user)
+        db.session.add(info)
+        db.session.commit()
+        flash('Your information has been saved', 'success')
+        return redirect(url_for('profile'))
+    else:
+        flash('Please provide valid input', 'danger')
     return render_template('profile.html', title = 'Personalize', form = form)
 
 

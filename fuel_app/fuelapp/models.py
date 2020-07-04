@@ -11,7 +11,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(70), unique = True, nullable = False)
     email = db.Column(db.String(100), unique = True, nullable = False)
     password = db.Column(db.String(60), nullable = False)
-    quotes = db.relationship('Quote', backref='quote', lazy =  True)
+    quotes = db.relationship('Quote', backref='quoteid', lazy =  True)
+    profile = db.relationship('Profile', backref= 'profileid', lazy = True)
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
 
@@ -36,3 +37,7 @@ class Profile(db.Model):
     city = db.Column(db.String(70), nullable = False)
     state = db.Column(db.String(2), nullable =False)
     zipcode = db.Column(db.Integer, nullable = False)
+    profile_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}')"

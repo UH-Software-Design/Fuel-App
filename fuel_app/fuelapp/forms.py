@@ -39,6 +39,6 @@ class profileForm(FlaskForm):
     address1 = StringField('Address 1: ', validators = [DataRequired(), Length(min =12, max = 100)])
     address2 = StringField('Address 2: ', validators = [Optional()])
     city = StringField('City: ', validators = [DataRequired(), Length(min=2, max =30)])#, Regexp('^[a-zA-Z]+$)')])
-    state = SelectField ('State: ', validators = [DataRequired()],choices = [('Texas', 'TX'), ('California', 'CA'), ('New York', 'NY')])
+    state = SelectField ('State: ', validators = [DataRequired()],choices = [('TX', 'Texas'), ('CA', 'California'), ('NY', 'New York')])
     zipcode = IntegerField('Zip Code: ', validators= [DataRequired()])
     submit = SubmitField('Submit')
