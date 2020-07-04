@@ -59,7 +59,15 @@ def profile():
         ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObj= current_user)
         db.session.add(info)
         db.session.commit()
-        flash('Your information has been saved', 'success')
+
+        # if not current_user.profile:
+        #     info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+        #     ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObj= current_user)
+        #     db.session.add(info)
+        #     db.session.commit()
+        #     flash('Your information has been saved', 'success')
+        # else:
+        #     print("Hey")
         return redirect(url_for('profile'))
     else:
         flash('Please provide valid input', 'danger')
