@@ -1,7 +1,7 @@
 from flask import render_template, url_for, flash, redirect, request
 from fuelapp import app, db, bcrypt
 from fuelapp.forms import registrationForm, loginForm, quoteForm, profileForm
-from fuelapp.models import User, Profile, QuoteHistory
+from fuelapp.models import User, Profile, Quote
 from flask_login import login_user, current_user, logout_user, login_required
 
 
