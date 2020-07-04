@@ -22,7 +22,7 @@ class QuoteHistory(db.Model):
     deliveryDate = db.Column(db.Date, nullable = False)
     address = db.Column(db.String(200), nullable =False)
     rate = db.Column(db.Float, nullable = False)
-    total = db.Column(db.Float, nullable = False)
+    totalAmt = db.Column(db.Float, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
@@ -40,4 +40,4 @@ class Profile(db.Model):
     profile_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}')"m
+        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}')"
