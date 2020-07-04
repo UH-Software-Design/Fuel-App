@@ -39,7 +39,7 @@ class Profile(db.Model):
     state = db.Column(db.String(2), nullable =False)
     zipcode = db.Column(db.Integer, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref="profileObj")
+    user = db.relationship("User", backref="profileObj", lazy= True)
 
     def __repr__(self):
         return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}', {self.user_id})"
