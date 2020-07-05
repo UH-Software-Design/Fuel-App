@@ -32,8 +32,8 @@ class quoteForm(FlaskForm):
     deliveryAddress = StringField('Delivery address: ', validators = [Optional()])
     rate = DecimalField('Price per gallon: ')
     total = DecimalField('Total amount due: ')
-    submit = SubmitField(label="Submit Quote")
-    calQuote = SubmitField(label="Calculate Quote")
+    submit = SubmitField(label="Submit")
+    calQuote = SubmitField(label="Calculate")
 
 class profileForm(FlaskForm):
     name = StringField('Name: ', validators = [DataRequired(), Length(min=3, max =50)])#, Regexp('^[a-zA-Z]+$)')])
