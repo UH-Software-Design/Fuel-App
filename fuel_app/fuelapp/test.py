@@ -94,7 +94,7 @@ class FlaskTestCases(unittest.TestCase):
         self.assertIn(b'Field must be between 10 and 100 characters long.', response.data)
     def test_correct_error_message_registration_invalid_address1_long(self):
         tester=app.test_client(self)
-        response=tester.post('/profile',data=dict(address1"1234567890 streeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet"),follow_redirects=True)
+        response=tester.post('/profile',data=dict(address1="1234567890 streeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeet"),follow_redirects=True)
         self.assertIn(b'Field must be between 6 and 30 characters long.', response.data)
     def test_correct_error_message_registration_invalid_city_short(self):
         tester=app.test_client(self)
