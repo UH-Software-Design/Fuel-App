@@ -49,9 +49,14 @@ input:invalid:required {
   margin-bottom: $alert-margin-bottom;
   border: $alert-border-width solid transparent;
   @include border-radius($alert-border-radius);
-  top:60px;
+  top: 60px;
 }
 
+.row{
+  position: fixed;
+  top: 250px;
+  vertical-align: middle;
+}
 .navbar a {
     color: #fff;
     padding: 10px 20px;

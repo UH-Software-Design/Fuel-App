@@ -150,6 +150,12 @@ def profile():
 
     return render_template('profile.html', title = 'Personalize', form = form)
 
+@app.route('/history', methods = ['GET', 'POST'])
+@login_required
+def history():
+    history1 = "hey"
+    return render_template('history.html', title = 'Personalize')
+
 
 @app.route('/logout')
 def logout():
