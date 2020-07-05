@@ -40,7 +40,7 @@ def registration():
 def quote():
     form = quoteForm()
     if form.validate_on_submit():
-        toadd = Quote(gallons = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
+        toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
                     ,address = form.deliveryAddress.data, rate = form.rate.data
                     ,total =form.total.data, quoteid= current_user)
         db.session.add(toadd)
