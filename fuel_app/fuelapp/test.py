@@ -59,6 +59,25 @@ class FlaskTestCases(unittest.TestCase):
         response = tester.post('/profile',data=dict(email='name@email.com',username='username',password='password'),
         follow_redirects=True)
         self.assertIn(b'Profile Management',response.data)
+    
+    #Registration Input Test Cases
+    #Tests if the correct error ir returned for username
+    def test_correct_error_message_registration_invalid_username_short(self):
+        tester=app.test_client(self)
+        response=tester.post('/register',data=dict(username="u"),follow_redirects=True)
+        self.assertIn(b'Field must be between 2 and 25 characters long.', response.data)
+    def test_correct_error_message_registration_invalid_username_long(self):
+        tester=app.test_client(self)
+        response=tester.post('/register',data=dict(username="uuuuuuuuuuuuuuuuuuuuuuuuuuu"),follow_redirects=True)
+        self.assertIn(b'Field must be between 2 and 25 characters long.', response.data)
+    def test_correct_error_message_registration_invalid_password_short(self):
+        tester=app.test_client(self)
+        response=tester.post('/register',data=dict(password="12345"),follow_redirects=True)
+        self.assertIn(b'Field must be between 6 and 30 characters long.', response.data)
+    def test_correct_error_message_registration_invalid_password_long(self):
+        tester=app.test_client(self)
+        response=tester.post('/register',data=dict(password="uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu"),follow_redirects=True)
+        self.assertIn(b'Field must be between 6 and 30 characters long.', response.data)
 
 if __name__ == "__main__":
     unittest.main()
