@@ -39,18 +39,24 @@ def registration():
 @login_required
 def quote():
     form = quoteForm()
+    #Looks ugly but breaking it up over mutliple lines breaks it for some reason
+    form.deliveryAddress.data = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
+    # form.rate.data = 1.6
+    # form.total.data = 150.0
     if form.validate_on_submit():
+        #form.rate.data = 1.6
+
         if form.calQuote.data:
             gallonsRequest = form.gallonsRequested.data
-            deliveryDate = form.deliveryDate.data
-
-        toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
-                    ,address = form.deliveryAddress.data, rate = form.rate.data
-                    ,total =form.total.data, quoteid= current_user)
-        db.session.add(toadd)
-        db.session.commit()
-        flash('okaaay')
-        return redirect(url_for('quote'))
+            suggestRate = calculateRate(gallonsRequest)
+        #
+        # toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
+        #             ,address = form.deliveryAddress.data, rate = form.rate.data
+        #             ,total =form.total.data, quoteid= current_user)
+        # db.session.add(toadd)
+        # db.session.commit()
+        flash(f'Your suggestRate should be {suggestRate}', "success")
+        # return redirect(url_for('quote'))
     return render_template('quote.html', title = 'Get your quote', form = form)
 
 def calculateRate(amtRequested):
@@ -84,14 +90,24 @@ def calculateRate(amtRequested):
 def profile():
     form = profileForm()
 
-    if form.validate_on_submit():
-        if not current_user.profile:
-            info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-            ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
-            db.session.add(info)
-            db.session.commit()
-            flash('Your information has been saved', 'success')
-        else:
+    if not current_user.profile:
+        if form.validate_on_submit():
+            if not current_user.profile:
+                info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
+                db.session.add(info)
+                db.session.commit()
+                flash('Your information has been saved', 'success')
+    else:
+        #When I add the form data, the DB stops saving for some reason
+        # form.name.data = current_user.profileObj.name
+        # form.address1.data = current_user.profileObj.address1
+        # form.address2.data = current_user.profileObj.address2
+        # form.city.data = current_user.profileObj.city
+        # form.state.data = current_user.profileObj.state
+        # form.zipcode.data = current_user.profileObj.zipcode
+
+        if form.validate_on_submit():
             current_user.profileObj.name = form.name.data
             current_user.profileObj.address1 = form.address1.data
             current_user.profileObj.address2= form.address2.data
@@ -100,6 +116,23 @@ def profile():
             current_user.profileObj.zipcode= form.zipcode.data
             db.session.commit()
             flash(f'Your profile has been updated', 'success')
+
+    # if form.validate_on_submit():
+    #     if not current_user.profile:
+    #         info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+    #         ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
+    #         db.session.add(info)
+    #         db.session.commit()
+    #         flash('Your information has been saved', 'success')
+    #     else:
+    #         current_user.profileObj.name = form.name.data
+    #         current_user.profileObj.address1 = form.address1.data
+    #         current_user.profileObj.address2= form.address2.data
+    #         current_user.profileObj.city = form.city.data
+    #         current_user.profileObj.state = form.state.data
+    #         current_user.profileObj.zipcode= form.zipcode.data
+    #         db.session.commit()
+    #         flash(f'Your profile has been updated', 'success')
 
     return render_template('profile.html', title = 'Personalize', form = form)
 

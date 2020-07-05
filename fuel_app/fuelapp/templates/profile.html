@@ -4,7 +4,7 @@
         <form method="POST" action="">
             {{ form.hidden_tag()}}
             <fieldset class = "form-group">
-                <legend>Update your profile</legend>
+                <legend>Change Profile</legend>
                 <div>
                     {{form.name.label}}
                     {% if form.name.errors%}
@@ -60,7 +60,7 @@
                         {{form.city}}
                     {% endif %}
                 </div>
-                
+
                 <div>
                     {{form.state.label}}
                     {% if form.state.errors %}

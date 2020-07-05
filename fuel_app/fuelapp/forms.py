@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DecimalField, HiddenField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, IntegerField, DecimalField, HiddenField, SelectField, TextAreaField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp, ValidationError
 from fuelapp.models import User
+
 
 class registrationForm(FlaskForm):
     username = StringField('Username', validators =[DataRequired(), Length(min = 2, max = 25)])
@@ -29,9 +30,11 @@ class loginForm(FlaskForm):
 class quoteForm(FlaskForm):
     gallonsRequested = IntegerField('Gallons requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)])
     deliveryDate = DateField('Delivery date', format = '%Y-%m-%d')
-    deliveryAddress = StringField('Delivery address: ', validators = [Optional()])
-    rate = DecimalField('Price per gallon: ')
-    total = DecimalField('Total amount due: ')
+    deliveryAddress = TextAreaField('Delivery address: ', validators = [Optional()])
+    # rate = DecimalField('Price per gallon: ')
+    # total = DecimalField('Total amount due: ')
+    rate = StringField("Price per Gallon:", validators = [Optional()])
+    total = StringField("Total Amount:", validators = [Optional()])
     submit = SubmitField(label="Submit")
     calQuote = SubmitField(label="Calculate")
 
