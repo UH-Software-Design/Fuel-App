@@ -53,6 +53,7 @@ def quote():
 @login_required
 def profile():
     form = profileForm()
+
     if form.validate_on_submit():
         if not current_user.profile:
             info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data

@@ -38,6 +38,15 @@ input:invalid:required {
   line-height: 75px;
   font-size: 30px;
 }
+/*This is absolutley not how to fix the positioning of the flashes...*/
+.alert {
+  position: relative;
+  padding: $alert-padding-y $alert-padding-x;
+  margin-bottom: $alert-margin-bottom;
+  border: $alert-border-width solid transparent;
+  @include border-radius($alert-border-radius);
+  top:60px;
+}
 
 .navbar a {
     color: #fff;
