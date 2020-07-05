@@ -52,7 +52,7 @@ def quote():
 
         # if form.submit.data:
         if form.validate_on_submit():
-            quote = Quote(gallonsRequest = "50",deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, userQ = current_user)
+            quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, userQ = current_user)
             db.session.add(quote)
             db.session.commit()
             flash('Your quote was submitted!', "success")
@@ -153,8 +153,8 @@ def profile():
 @app.route('/history', methods = ['GET', 'POST'])
 @login_required
 def history():
-    history1 = "hey"
-    return render_template('history.html', title = 'Personalize')
+    quotes = Quote.query.filter_by(user_id=current_user.id)
+    return render_template('history.html', title = 'Personalize', quotes = quotes)
 
 
 @app.route('/logout')

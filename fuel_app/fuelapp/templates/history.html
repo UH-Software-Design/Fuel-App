@@ -4,14 +4,24 @@
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">First</th>
-          <th scope="col">Last</th>
-          <th scope="col">Handle</th>
+          <th scope="col">Gallons Requested</th>
+          <th scope="col">Delivery Date</th>
+          <th scope="col">Delivery Address</th>
+          <th scope="col">Price per Gallon</th>
+          <th scope="col">Total Amount</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
+        {% for quote in quotes%}
+          <tr>
+            <td>{{ quote.gallonsRequest }}</td>
+            <td>{{ quote.deliveryDate }}</td>
+            <td>{{ quote.address }}</td>
+            <td>{{ quote.rate }}</td>
+            <td>{{ quote.totalAmt }}</td>
+          </tr>
+        {% endfor %}
+        <!-- <tr>
           <th scope="row">1</th>
           <td>Mark</td>
           <td>Otto</td>
@@ -28,7 +38,7 @@
           <td>Larry</td>
           <td>the Bird</td>
           <td>@twitter</td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
   </div>
