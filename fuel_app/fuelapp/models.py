@@ -12,8 +12,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(70), unique = True, nullable = False)
     email = db.Column(db.String(100), unique = True, nullable = False)
     password = db.Column(db.String(60), nullable = False)
-    quotes = db.relationship('Quote', backref='quoteid', lazy =  True)
-    profile = db.relationship('Profile', backref=backref('userObj',lazy = True, uselist=False))
+    quote = db.relationship('Quote', backref='userObjQuote', lazy =  True)
+    profile = db.relationship('Profile', backref=backref('userObjProfile',lazy = True, uselist=False))
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"

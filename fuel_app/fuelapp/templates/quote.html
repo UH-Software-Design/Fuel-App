@@ -43,13 +43,15 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{form.deliveryAddress}}
+                        {{ form.deliveryAddress(readonly="readonly") }}
                     {% endif %}
                 </div>
-                
+
                 <div>
                     {{form.rate.label}}
-                    {% if form.rate.errors %}
+                    {{ form.rate(readonly="readonly") }}
+
+                    <!-- {% if form.rate.errors %}
                         {{form.rate(class = "is-invalid")}}
                         <div class = "invalid-feedback">
                             {% for error in form.rate.errors %}
@@ -57,13 +59,15 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{form.rate}}
-                    {% endif %}
+                        {{ form.rate(readonly="readonly") }}
+                    {% endif %} -->
                 </div>
 
                 <div>
                     {{form.total.label}}
-                    {% if form.total.errors %}
+                    {{ form.total(readonly="readonly") }}
+
+                    <!-- {% if form.total.errors %}
                         {{form.total(class = "is-invalid")}}
                         <div class = "invalid-feedback">
                             {% for error in form.total.errors %}
@@ -71,13 +75,21 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{form.total}}
-                    {% endif %}
+                        {{ form.total(readonly="readonly") }}
+                    {% endif %} -->
                 </div>
-                
+
             </fieldset>
+            <script>
+              $(document).ready(function(){
+                $('#Submit').load('quote.html', function() {
+                  $('#Submit').hide();
+                  )};
+              });
+            </script>
             <div>
-                {{form.submit(class = "btn")}}
+                {{ form.calQuote(class = "btn", id="calc" )}}
+                {{ form.submit(class = "btn", id="submit" )}}
             </div>
         </form>
     </div>

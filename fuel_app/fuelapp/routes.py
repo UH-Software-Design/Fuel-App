@@ -40,6 +40,10 @@ def registration():
 def quote():
     form = quoteForm()
     if form.validate_on_submit():
+        if form.calQuote.data:
+            gallonsRequest = form.gallonsRequested.data
+            deliveryDate = form.deliveryDate.data
+
         toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
                     ,address = form.deliveryAddress.data, rate = form.rate.data
                     ,total =form.total.data, quoteid= current_user)
@@ -49,6 +53,32 @@ def quote():
         return redirect(url_for('quote'))
     return render_template('quote.html', title = 'Get your quote', form = form)
 
+def calculateRate(amtRequested):
+
+    basePrice = 1.50
+
+    if current_user.profileObj.state == "TX":
+        LocationFactor = 0.02
+    else:
+        locationFactor = 0.04
+
+    if current_user.quote:
+        rateHistory = 0.01
+    else:
+        rateHistory = 0.00
+
+    if amtRequested >= 1000:
+        amtFactor = 0.02
+    else:
+        amtFactor = 0.03
+
+    companyProfitFactor = 0.10
+
+    margin = basePrice * (locationFactor-rateHistory+amtRequested+companyProfitFactor)
+    suggestedRate = basePrice + margin
+
+    return suggestedRate
+
 @app.route('/profile', methods = ['GET', 'POST'])
 @login_required
 def profile():
@@ -57,7 +87,7 @@ def profile():
     if form.validate_on_submit():
         if not current_user.profile:
             info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-            ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObj= current_user)
+            ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
             db.session.add(info)
             db.session.commit()
             flash('Your information has been saved', 'success')
@@ -70,13 +100,7 @@ def profile():
             current_user.profileObj.zipcode= form.zipcode.data
             db.session.commit()
             flash(f'Your profile has been updated', 'success')
-    elif request.method == 'GET':
-        form.name.data = current_user.profileObj.name
-        form.address1.data = current_user.profileObj.address1
-        form.address2.data= current_user.profileObj.address2
-        form.city.data = current_user.profileObj.city
-        form.state.data = current_user.profileObj.state
-        form.zipcode.data = current_user.profileObj.zipcode
+
     return render_template('profile.html', title = 'Personalize', form = form)
 
 
