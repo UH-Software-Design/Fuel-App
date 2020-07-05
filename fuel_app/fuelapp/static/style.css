@@ -24,6 +24,10 @@ input:invalid:required {
     background-image: linear-gradient(to right, pink, lightgreen);
   } */
 
+  /* #submit {
+      visibility: hidden;
+  } */
+
 .flex-container {
   display: flex;
   justify-content: center;

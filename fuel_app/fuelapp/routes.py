@@ -40,47 +40,61 @@ def registration():
 def quote():
     form = quoteForm()
     #Looks ugly but breaking it up over mutliple lines breaks it for some reason
-    form.deliveryAddress.data = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
-    # form.rate.data = 1.6
-    # form.total.data = 150.0
-    if form.validate_on_submit():
-        #form.rate.data = 1.6
+    concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
+    form.deliveryAddress.data = concatAdd
+    if form.calQuote.data:
+        gallonsReq = form.gallonsRequested.data
+        suggestRate = calculateRate(gallonsReq)
+        total = suggestRate * gallonsReq
+        form.rate.data = suggestRate
+        form.total.data = total
+        flash('Quote was calculated!', "success")
 
-        if form.calQuote.data:
-            gallonsRequest = form.gallonsRequested.data
-            suggestRate = calculateRate(gallonsRequest)
+        # if form.submit.data:
+        if form.validate_on_submit():
+            quote = Quote(gallonsRequest = "50",deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, userQ = current_user)
+            db.session.add(quote)
+            db.session.commit()
+            flash('Your quote was submitted!', "success")
+    # if form.validate_on_submit():
+
+        # if form.calQuote.data:
+        #     gallonsRequest = form.gallonsRequested.data
+        #     suggestRate = calculateRate(gallonsRequest)
+        #     form.rate.data = suggestRate
+        #     form.total.data = suggestRate * gallonsRequest
+
+
+
         #
         # toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
         #             ,address = form.deliveryAddress.data, rate = form.rate.data
         #             ,total =form.total.data, quoteid= current_user)
         # db.session.add(toadd)
         # db.session.commit()
-        flash(f'Your suggestRate should be {suggestRate}', "success")
+        # flash(f'Your suggestRate should be', "success")
         # return redirect(url_for('quote'))
     return render_template('quote.html', title = 'Get your quote', form = form)
 
 def calculateRate(amtRequested):
 
     basePrice = 1.50
+    companyProfitFactor = 0.10
 
     if current_user.profileObj.state == "TX":
-        LocationFactor = 0.02
+        locationFactor = 0.02
     else:
         locationFactor = 0.04
-
     if current_user.quote:
         rateHistory = 0.01
     else:
         rateHistory = 0.00
-
     if amtRequested >= 1000:
         amtFactor = 0.02
     else:
         amtFactor = 0.03
 
-    companyProfitFactor = 0.10
-
-    margin = basePrice * (locationFactor-rateHistory+amtRequested+companyProfitFactor)
+    margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
     suggestedRate = basePrice + margin
 
     return suggestedRate
@@ -94,7 +108,7 @@ def profile():
         if form.validate_on_submit():
             if not current_user.profile:
                 info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
+                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userP = current_user)
                 db.session.add(info)
                 db.session.commit()
                 flash('Your information has been saved', 'success')
