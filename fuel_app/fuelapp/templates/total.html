@@ -1,0 +1,81 @@
+{% extends "layouts.html" %}
+{% block content %}
+    <div class = "box">
+        <form method="POST" action="">
+            {{ form.hidden_tag()}}
+            <fieldset class = "form-group">
+                <legend>Get Your Quote</legend>
+                <div>
+                    {{form.gallonsRequested.label}}
+                    {% if form.gallonsRequested.errors%}
+                        {{form.gallonsRequested(class = "is-invalid")}}
+                        <div class = "invalid-feedback">
+                            {% for error in form.gallonsRequested.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.gallonsRequested}}
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{form.deliveryDate.label}}
+                    {% if form.deliveryDate.errors%}
+                        {{form.deliveryDate(class = "is-invalid")}}
+                        <div class = "invalid-feedback">
+                            {% for error in form.deliveryDate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.deliveryDate}}
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{form.deliveryAddress.label}}
+                    {% if form.deliveryAddress.errors %}
+                        {{form.deliveryAddress(class = "is-invalid")}}
+                        <div class = "invalid-feedback">
+                            {% for error in form.deliveryAddress.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.deliveryAddress}}
+                    {% endif %}
+                </div>
+                
+                <div>
+                    {{form.rate.label}}
+                    {% if form.rate.errors %}
+                        {{form.rate(class = "is-invalid")}}
+                        <div class = "invalid-feedback">
+                            {% for error in form.rate.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.rate}}
+                    {% endif %}
+                </div>
+
+                <div>
+                    {{form.total.label}}
+                    {% if form.total.errors %}
+                        {{form.total(class = "is-invalid")}}
+                        <div class = "invalid-feedback">
+                            {% for error in form.total.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{form.total}}
+                    {% endif %}
+                </div>
+                
+            </fieldset>
+        </form>
+    </div>
+{% endblock content %}

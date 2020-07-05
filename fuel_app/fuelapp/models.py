@@ -23,7 +23,7 @@ class Quote(db.Model):
     address = db.Column(db.String(200), nullable =False)
     rate = db.Column(db.Float, nullable = False)
     total = db.Column(db.Float, nullable = False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    quote_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
         return f"Quote('{self.gallons}', '{self.deliveryDate}', '{self.address}', '{self.rate}', '{self.total}')"

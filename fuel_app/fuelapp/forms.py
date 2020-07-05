@@ -29,10 +29,18 @@ class loginForm(FlaskForm):
 class quoteForm(FlaskForm):
     gallonsRequested = IntegerField('Gallons requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)])
     deliveryDate = DateField('Delivery date', format = '%Y-%m-%d')
-    deliveryAddress = StringField('Delivery address: ', validators = [Optional()])
-    rate = DecimalField('Price per gallon: ')
-    total = DecimalField('Total amount due: ')
+    deliveryAddress = StringField('Delivery address: ', render_kw={'readonly': True})
+    rate = DecimalField('Price per gallon: ',render_kw={'readonly': True})
+    total = DecimalField('Total amount due: ', render_kw={'readonly': True})
     submit = SubmitField('Calculate total')
+
+class totalForm(FlaskForm):
+    gallonsRequested = IntegerField('Gallons requested: ',render_kw={'readonly': True} )
+    deliveryDate = DateField('Delivery date', format = '%Y-%m-%d', render_kw={'readonly': True})
+    deliveryAddress = StringField('Delivery address: ', render_kw={'readonly': True})
+    rate = DecimalField('Price per gallon: ',render_kw={'readonly': True})
+    total = DecimalField('Total amount due: ', render_kw={'readonly': True})
+    #submit = SubmitField('Calculate total')
 
 class profileForm(FlaskForm):
     name = StringField('Name: ', validators = [DataRequired(), Length(min=12, max =50)])#, Regexp('^[a-zA-Z]+$)')])
