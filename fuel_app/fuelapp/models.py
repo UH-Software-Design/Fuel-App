@@ -1,5 +1,6 @@
 from fuelapp import db, login_manager
 from flask_login import UserMixin
+from sqlalchemy.orm import backref
 
 
 @login_manager.user_loader
@@ -12,7 +13,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(100), unique = True, nullable = False)
     password = db.Column(db.String(60), nullable = False)
     quotes = db.relationship('Quote', backref='quoteid', lazy =  True)
-    profile = db.relationship('Profile', backref= 'userObj', lazy = True)
+    profile = db.relationship('Profile', backref=backref('userObj',lazy = True, uselist=False))
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
@@ -39,7 +40,7 @@ class Profile(db.Model):
     state = db.Column(db.String(2), nullable =False)
     zipcode = db.Column(db.Integer, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref="profileObj", lazy= True)
+    user = db.relationship("User", backref=backref("profileObj", lazy=True, uselist=False))
 
     def __repr__(self):
         return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}', {self.user_id})"
