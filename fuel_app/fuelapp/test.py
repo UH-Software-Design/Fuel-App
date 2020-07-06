@@ -104,6 +104,13 @@ class FlaskTestCases(unittest.TestCase):
         tester=app.test_client(self)
         response=tester.post('/profile',data=dict(city="cccccciiiiiiiitttttttttyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"),follow_redirects=True)
         self.assertIn(b'Field must be between 2 and 30 characters long.', response.data)
-
+    
+    #Quote Test cases
+    def test_correct_error_message_quote_invalid_gallonsrequested_short(self):
+        tester=app.test_client(self)
+        response=tester.post('/quote',data=dict(gallonsRequested=49),follow_redirects=True)
+        self.assertIn(b'Value must be between 50 and 100.', response.data)
+        
+        
 if __name__ == "__main__":
     unittest.main()
