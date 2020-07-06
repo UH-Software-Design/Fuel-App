@@ -110,7 +110,10 @@ class FlaskTestCases(unittest.TestCase):
         tester=app.test_client(self)
         response=tester.post('/quote',data=dict(gallonsRequested=49),follow_redirects=True)
         self.assertIn(b'Value must be between 50 and 100.', response.data)
-        
+    def test_correct_error_message_quote_invalid_deliveryDate_short(self):
+        tester=app.test_client(self)
+        response=tester.post('/quote',data=dict(deliveryDate=6-12-2000),follow_redirects=True)
+        self.assertIn(b'Value for month must be betwwen 1 and 12. Value for date must be between 1 and 31. Value for year must be between 1950 and 2050.' response.data)
         
 if __name__ == "__main__":
     unittest.main()
