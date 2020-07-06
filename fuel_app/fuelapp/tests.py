@@ -1,4 +1,4 @@
-from flaskblog import app
+from run import app
 import unittest
 
 class FlaskTestCases(unittest.TestCase):
