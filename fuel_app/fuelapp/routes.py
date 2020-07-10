@@ -15,8 +15,8 @@ def home():
         user = User.query.filter_by(username = form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember = form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('profile'))
+            checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+            return redirect(url_for('profile')) if checkProfile == None else redirect(url_for('quote'))
         else:
             flash('Login failed. Check username and password', 'danger')
     return render_template('home.html', title = 'Login', form = form)
@@ -39,6 +39,10 @@ def registration():
 @login_required
 def quote():
     form = quoteForm()
+    checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+    if checkProfile == None:
+        return redirect(url_for('profile'))
+
     #Looks ugly but breaking it up over mutliple lines breaks it for some reason
     concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
     form.deliveryAddress.data = concatAdd
@@ -153,6 +157,9 @@ def profile():
 @app.route('/history', methods = ['GET', 'POST'])
 @login_required
 def history():
+    checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+    if checkProfile == None:
+        return redirect(url_for('profile'))
     quotes = Quote.query.filter_by(user_id=current_user.id)
     return render_template('history.html', title = 'Personalize', quotes = quotes)
 
