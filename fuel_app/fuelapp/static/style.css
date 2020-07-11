@@ -99,9 +99,17 @@ body
     justify-content: center;
     align-items: center;
     align-content: center;
-    padding-top: 100px;
+    padding-top: 150px;
 }
 
+.bot{
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   align-content: center;
+   padding-top: 0px;
+}
 th, td{
     padding: 10px;
     text-align: left;

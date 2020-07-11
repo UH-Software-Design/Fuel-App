@@ -21,8 +21,8 @@
                     <li><a href="{{url_for('quote')}}">Quote</a></li>
                     <li><a href="{{url_for('logout')}}">Log out</a></li>
                     <li><a href="{{url_for('history')}}">History</a></li>
-                    {% else %}
-                    <li><a href="{{url_for('home')}}">Home</a></li>
+                    {% elif title=="Register" %}
+                    <li><a href="{{url_for('home')}}">Log In</a></li>
                     {% endif %}
                 </ul>
             </nav>

@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, HiddenField, SelectField, TextAreaField#, IntegerField, DecimalField
 from wtforms.fields.html5 import DateField, IntegerField, EmailField, DecimalField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp, ValidationError
+from wtforms.widgets.html5 import NumberInput
 from fuelapp.models import User
 
 
@@ -28,7 +29,7 @@ class loginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class quoteForm(FlaskForm):
-    gallonsRequested = IntegerField('Gallons requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)])
+    gallonsRequested = IntegerField('Gallons requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)], widget=NumberInput(min = 0, max = 3501))
     deliveryDate = DateField('Delivery date', format = '%Y-%m-%d', validators = [DataRequired(message="You need to enter a date")])
     deliveryAddress = TextAreaField('Delivery address: ', validators = [DataRequired("Update your profile with an address")])
     rate = DecimalField("Price per Gallon:", validators = [Optional()])
