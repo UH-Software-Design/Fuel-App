@@ -44,5 +44,5 @@ class profileForm(FlaskForm):
     address2 = StringField('Address 2: ', validators = [Optional()])
     city = StringField('City: ', validators = [DataRequired(), Length(min=2, max =30)])
     state = SelectField ('State: ', validators = [DataRequired()],choices = [('TX', 'Texas'), ('CA', 'California'), ('NY', 'New York')])
-    zipcode = IntegerField('Zip Code: ', validators= [DataRequired(), Length(min=5,max=5)], widget=NumberInput(min = 501, max = 99950))
+    zipcode = IntegerField('Zip Code: ', validators= [DataRequired()], widget=NumberInput(min = 501, max = 99950))
     submit = SubmitField('Submit')
