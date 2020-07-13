@@ -2,6 +2,7 @@ from run import app
 import unittest
 from fuelapp import db
 from fuelapp.models import User, Profile, Quote
+from fuelapp import bcrypt
 
 class FlaskTestCases(unittest.TestCase):
 
@@ -100,17 +101,13 @@ class FlaskTestCases(unittest.TestCase):
         tester=app.test_client(self)
         db.drop_all()
         db.create_all()
-        user = User(username="Chase", email="chase@gmail.com", password="123456")
+        hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+        user = User(username="bob", email="bob@gmail.com", password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        response=tester.post('/home',data=dict(username='Chaseee',password='heyhey'), follow_redirects=True)#, follow_redirects=True
+        response=tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
         self.assertIn(b'Change Profile',response.data)
 
-
-    # def test_register_logged_out(self):
-    #     tester = app.test_client(self)
-    #     response = tester.get('/registration',content_type='html/text')
-    #     self.assertTrue(b'Register Here' in response.data)
 
 if __name__ == "__main__":
     unittest.main()

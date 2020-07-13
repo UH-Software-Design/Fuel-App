@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, HiddenField, SelectField, TextAreaField#, IntegerField, DecimalField
 from wtforms.fields.html5 import DateField, IntegerField, EmailField, DecimalField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, Optional, Regexp, ValidationError
-from wtforms.widgets import TextInput
+from wtforms.widgets import TextInput, PasswordInput
 from wtforms.widgets.html5 import NumberInput
 from fuelapp.models import User
 
@@ -25,7 +25,8 @@ class registrationForm(FlaskForm):
 
 class loginForm(FlaskForm):
     username = StringField('Username', validators =[DataRequired(), Length(min = 2, max = 25)])
-    password = PasswordField('Password', validators = [DataRequired(), Length(min = 6, max = 30)])
+    password = PasswordField('Password', validators = [DataRequired(), Length(min = 6, max = 30)], widget=PasswordInput(hide_value=False))
+    # password = StringField('Password', validators = [DataRequired(), Length(min = 6, max = 30)])
     remember = BooleanField('Remember me')
     submit = SubmitField('Login')
 

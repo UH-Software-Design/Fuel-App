@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     profile = db.relationship('Profile', backref=backref('userP',lazy = True, uselist=False))
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User('{self.username}', '{self.email}', '{self.password}')"
 
 class Quote(db.Model):
     id = db.Column(db.Integer, primary_key = True)
