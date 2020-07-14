@@ -6,6 +6,17 @@ from fuelapp import bcrypt
 
 class FlaskTestCases(unittest.TestCase):
 
+    #Setup for testing
+    def setUp(self):
+        app.config['TESTING'] = True
+        # app.config['WTF_CSRF_METHODS'] = []  # This is the magic
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+        self.app = app.test_client()
+        db.create_all()
+
+
+
     #Tests redirection to correct page when client is logged out.
     def test_root(self):
         tester = app.test_client(self)

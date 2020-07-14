@@ -3,6 +3,7 @@ from fuelapp import app, db, bcrypt
 from fuelapp.forms import registrationForm, loginForm, quoteForm, profileForm
 from fuelapp.models import User, Profile, Quote
 from flask_login import login_user, current_user, logout_user, login_required
+# import errors
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -16,9 +17,13 @@ def home():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember = form.remember.data)
             checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
-            return redirect(url_for('profile')) if checkProfile == None else redirect(url_for('quote'))
+            if checkProfile != None:
+                return redirect(url_for('quote'))
+            else:
+                return redirect(url_for('profile'))
         else:
             flash('Login failed. Check username and password', 'danger')
+    # print(form.errors.items())
     return render_template('home.html', title = 'Login', form = form)
 
 @app.route('/registration', methods = ['GET', 'POST'])
