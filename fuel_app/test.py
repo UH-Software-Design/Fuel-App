@@ -3,6 +3,8 @@ import unittest
 from fuelapp import db
 from fuelapp.models import User, Profile, Quote
 from fuelapp import bcrypt
+from flask_login import login_user, current_user
+
 
 class FlaskTestCases(unittest.TestCase):
 
@@ -108,7 +110,7 @@ class FlaskTestCases(unittest.TestCase):
         self.assertIn(b'Field must be equal to password.',response.data)
 
     #Test correct response to valid login input
-    def test_correct_response_after_Valid_login(self):
+    def test_valid_login(self):
         tester=app.test_client(self)
         db.drop_all()
         db.create_all()
@@ -118,6 +120,56 @@ class FlaskTestCases(unittest.TestCase):
         db.session.commit()
         response=tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
         self.assertIn(b'Change Profile',response.data)
+
+    #Test correct response to invalid login credentials
+    def test_invalid_login(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        response=tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        self.assertIn(b'Login failed. Check username and password',response.data)
+
+    #Test redirection if authetnicated user revists login page
+    def test_authenticated_user_redirect_from_login(self):
+        with app.app_context():
+            with app.test_request_context():
+                tester=app.test_client(self)
+                db.drop_all()
+                db.create_all()
+                hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+                user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+                db.session.add(user)
+                db.session.commit()
+                response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+                response = tester.get('/home',content_type='html/text', follow_redirects=True)
+                self.assertIn(b'Change Profile', response.data)
+
+    #If a user's profile already exists, check that the user gets redirected to the quote page
+    def test_redirection_to_quote_if_profile_exists(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+        user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+
+        profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id="123")
+        db.session.add(profile)
+        db.session.commit()
+
+        response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        self.assertIn(b'Get Your Quote', response.data)
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":

@@ -3,7 +3,6 @@ from fuelapp import app, db, bcrypt
 from fuelapp.forms import registrationForm, loginForm, quoteForm, profileForm
 from fuelapp.models import User, Profile, Quote
 from flask_login import login_user, current_user, logout_user, login_required
-# import errors
 
 
 @app.route('/', methods = ['GET', 'POST'])
