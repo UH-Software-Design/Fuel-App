@@ -146,20 +146,23 @@ class FlaskTestCases(unittest.TestCase):
 
     #If a user's profile already exists, check that the user gets redirected to the quote page
     def test_redirection_to_quote_if_profile_exists(self):
-        tester=app.test_client(self)
-        db.drop_all()
-        db.create_all()
-        hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
-        user = User(username="bob", email="bob@gmail.com", password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+        with app.app_context():
+            with app.test_request_context():
+                tester=app.test_client(self)
+                db.drop_all()
+                db.create_all()
+                hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+                user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+                db.session.add(user)
+                db.session.commit()
+                login_user(user)
+                print(current_user)
+                profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", UserP=current_user)
+                db.session.add(profile)
+                db.session.commit()
 
-        profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id="123")
-        db.session.add(profile)
-        db.session.commit()
-
-        response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
-        self.assertIn(b'Get Your Quote', response.data)
+                response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+                self.assertIn(b'Get Your Quote', response.data)
 
 
 
