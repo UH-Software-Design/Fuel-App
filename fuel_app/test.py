@@ -154,7 +154,8 @@ class FlaskTestCases(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
 
-        profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id="123")
+        dummy = User.query.filter_by(username = "bob").first()
+        profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=dummy.id)
         db.session.add(profile)
         db.session.commit()
 
