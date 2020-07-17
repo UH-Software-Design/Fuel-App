@@ -28,7 +28,11 @@ def home():
 @app.route('/registration', methods = ['GET', 'POST'])
 def registration():
     if current_user.is_authenticated:
-        return redirect(url_for('profile'))
+        checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+        if checkProfile != None:
+            return redirect(url_for('quote'))
+        else:
+            return redirect(url_for('profile'))
     form = registrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -38,6 +42,52 @@ def registration():
         return redirect(url_for('home'))
     return render_template('register.html', title = 'Register', form = form)
 
+# @app.route('/quote', methods = ['GET', 'POST'])
+# @login_required
+# def quote():
+#     form = quoteForm()
+#     checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+#     if checkProfile == None:
+#         return redirect(url_for('profile'))
+#
+#     #Looks ugly but breaking it up over mutliple lines breaks it for some reason
+#     concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
+#     form.deliveryAddress.data = concatAdd
+#
+#     if form.calQuote.data:
+#         gallonsReq = form.gallonsRequested.data
+#         suggestRate = calculateRate(gallonsReq)
+#         total = suggestRate * gallonsReq
+#         form.rate.data = suggestRate
+#         form.total.data = total
+#         flash('Quote was calculated!', "success")
+#
+#         # if form.submit.data:
+#         if form.validate_on_submit():
+#             quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, user_id = current_user.id)
+#             db.session.add(quote)
+#             db.session.commit()
+#             flash('Your quote was submitted!', "success")
+#     # if form.validate_on_submit():
+#
+#         # if form.calQuote.data:
+#         #     gallonsRequest = form.gallonsRequested.data
+#         #     suggestRate = calculateRate(gallonsRequest)
+#         #     form.rate.data = suggestRate
+#         #     form.total.data = suggestRate * gallonsRequest
+#
+#
+#
+#         #
+#         # toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
+#         #             ,address = form.deliveryAddress.data, rate = form.rate.data
+#         #             ,total =form.total.data, quoteid= current_user)
+#         # db.session.add(toadd)
+#         # db.session.commit()
+#         # flash(f'Your suggestRate should be', "success")
+#         # return redirect(url_for('quote'))
+#     return render_template('quote.html', title = 'Get your quote', form = form)
+
 @app.route('/quote', methods = ['GET', 'POST'])
 @login_required
 def quote():
@@ -46,44 +96,24 @@ def quote():
     if checkProfile == None:
         return redirect(url_for('profile'))
 
-    #Looks ugly but breaking it up over mutliple lines breaks it for some reason
     concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
     form.deliveryAddress.data = concatAdd
-    if form.calQuote.data:
+
+    if form.validate_on_submit():
         gallonsReq = form.gallonsRequested.data
-        suggestRate = calculateRate(gallonsReq)
-        total = suggestRate * gallonsReq
+        suggestRate, total = calculateRateAndTotal(gallonsReq)
         form.rate.data = suggestRate
         form.total.data = total
         flash('Quote was calculated!', "success")
 
-        # if form.submit.data:
-        if form.validate_on_submit():
+        if form.submit.data:
             quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, user_id = current_user.id)
             db.session.add(quote)
             db.session.commit()
             flash('Your quote was submitted!', "success")
-    # if form.validate_on_submit():
-
-        # if form.calQuote.data:
-        #     gallonsRequest = form.gallonsRequested.data
-        #     suggestRate = calculateRate(gallonsRequest)
-        #     form.rate.data = suggestRate
-        #     form.total.data = suggestRate * gallonsRequest
-
-
-
-        #
-        # toadd = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate= form.deliveryDate.data
-        #             ,address = form.deliveryAddress.data, rate = form.rate.data
-        #             ,total =form.total.data, quoteid= current_user)
-        # db.session.add(toadd)
-        # db.session.commit()
-        # flash(f'Your suggestRate should be', "success")
-        # return redirect(url_for('quote'))
     return render_template('quote.html', title = 'Get your quote', form = form)
 
-def calculateRate(amtRequested):
+def calculateRateAndTotal(amtRequested):
 
     basePrice = 1.50
     companyProfitFactor = 0.10
@@ -103,8 +133,32 @@ def calculateRate(amtRequested):
 
     margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
     suggestedRate = basePrice + margin
+    total = suggestedRate * amtRequested
 
-    return suggestedRate
+    return suggestedRate, total
+
+# def calculateRate(amtRequested):
+#
+#     basePrice = 1.50
+#     companyProfitFactor = 0.10
+#
+#     if current_user.profileObj.state == "TX":
+#         locationFactor = 0.02
+#     else:
+#         locationFactor = 0.04
+#     if current_user.quote:
+#         rateHistory = 0.01
+#     else:
+#         rateHistory = 0.00
+#     if amtRequested >= 1000:
+#         amtFactor = 0.02
+#     else:
+#         amtFactor = 0.03
+#
+#     margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
+#     suggestedRate = basePrice + margin
+#
+#     return suggestedRate
 
 @app.route('/profile', methods = ['GET', 'POST'])
 @login_required

@@ -11,7 +11,6 @@ class FlaskTestCases(unittest.TestCase):
     #Setup for testing
     def setUp(self):
         app.config['TESTING'] = True
-        # app.config['WTF_CSRF_METHODS'] = []  # This is the magic
         app.config['WTF_CSRF_ENABLED'] = False
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
         self.app = app.test_client()
@@ -131,38 +130,91 @@ class FlaskTestCases(unittest.TestCase):
 
     #Test redirection if authetnicated user revists login page
     def test_authenticated_user_redirect_from_login(self):
-        with app.app_context():
-            with app.test_request_context():
-                tester=app.test_client(self)
-                db.drop_all()
-                db.create_all()
-                hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
-                user = User(username="bob", email="bob@gmail.com", password=hashed_password)
-                db.session.add(user)
-                db.session.commit()
-                response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
-                response = tester.get('/home',content_type='html/text', follow_redirects=True)
-                self.assertIn(b'Change Profile', response.data)
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+        user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        response = tester.get('/home',content_type='html/text', follow_redirects=True)
+        self.assertIn(b'Change Profile', response.data)
 
     #If a user's profile already exists, check that the user gets redirected to the quote page
     def test_redirection_to_quote_if_profile_exists(self):
-        with app.app_context():
-            with app.test_request_context():
-                tester=app.test_client(self)
-                db.drop_all()
-                db.create_all()
-                hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
-                user = User(username="bob", email="bob@gmail.com", password=hashed_password)
-                db.session.add(user)
-                db.session.commit()
-                login_user(user)
-                print(current_user)
-                profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=current_user.id)
-                db.session.add(profile)
-                db.session.commit()
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+            user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=current_user.id)
+            db.session.add(profile)
+            db.session.commit()
 
-                response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
-                self.assertIn(b'Get Your Quotee', response.data)
+            response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            self.assertIn(b'Get Your Quote', response.data)
+
+    def test_redirection_to_quote_from_registration(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+            user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=current_user.id)
+            db.session.add(profile)
+            db.session.commit()
+
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            response = tester.get('/registration',content_type='html/text', follow_redirects=True)
+            self.assertIn(b'Get Your Quote', response.data)
+
+    def test_redirection_to_profile_from_registration(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            hashed_password = bcrypt.generate_password_hash("123456")#.decode('utf-8')
+            user = User(username="bob", email="bob@gmail.com", password=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            response = tester.get('/registration',content_type='html/text', follow_redirects=True)
+            self.assertIn(b'Change Profile', response.data)
+
+    def test_user_registration(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        self.assertIn(b'Change Profile', response.data)
+
+    def test_redirection_to_profile_from_quote(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        response = tester.get('/quote',content_type='html/text', follow_redirects=True)
+        self.assertIn(b'Change Profile', response.data)
+
+
+
+
+
+
+
 
 
 
