@@ -15,8 +15,8 @@ class User(db.Model, UserMixin):
     quote = db.relationship('Quote', backref='userQ', lazy =  True)
     profile = db.relationship('Profile', backref=backref('userP',lazy = True, uselist=False))
 
-    # def __repr__(self):
-    #     return f"User('{self.username}', '{self.email}', '{self.password}')"
+    def __repr__(self):
+        return f"User('{self.username}', '{self.email}', '{self.password}')"
 
 class Quote(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -27,8 +27,8 @@ class Quote(db.Model):
     totalAmt = db.Column(db.Float, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    # def __repr__(self):
-    #     return f"Quote('{self.gallonsRequest}', '{self.deliveryDate}', '{self.address}', '{self.rate}', '{self.totalAmt}', '{self.user_id}')"
+    def __repr__(self):
+        return f"Quote('{self.gallonsRequest}', '{self.deliveryDate}', '{self.address}', '{self.rate}', '{self.totalAmt}', '{self.user_id}')"
 
 
 class Profile(db.Model):
@@ -42,5 +42,5 @@ class Profile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship("User", backref=backref("profileObj", lazy=True, uselist=False))
 
-    # def __repr__(self):
-    #     return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}', {self.user_id})"
+    def __repr__(self):
+        return f"Profile('{self.name}', '{self.address1}, '{self.city}', '{self.zipcode}', '{self.state}', {self.user_id})"

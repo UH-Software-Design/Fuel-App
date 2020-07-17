@@ -59,7 +59,7 @@ def quote():
 
         # if form.submit.data:
         if form.validate_on_submit():
-            quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, userQ = current_user)
+            quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, user_id = current_user.id)
             db.session.add(quote)
             db.session.commit()
             flash('Your quote was submitted!', "success")
@@ -115,7 +115,7 @@ def profile():
         if form.validate_on_submit():
             if not current_user.profile:
                 info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userP = current_user)
+                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id = current_user.id)
                 db.session.add(info)
                 db.session.commit()
                 flash('Your information has been saved', 'success')

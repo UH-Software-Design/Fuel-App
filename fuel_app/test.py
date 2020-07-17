@@ -157,12 +157,12 @@ class FlaskTestCases(unittest.TestCase):
                 db.session.commit()
                 login_user(user)
                 print(current_user)
-                profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", UserP=current_user)
+                profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=current_user.id)
                 db.session.add(profile)
                 db.session.commit()
 
                 response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
-                self.assertIn(b'Get Your Quote', response.data)
+                self.assertIn(b'Get Your Quotee', response.data)
 
 
 
