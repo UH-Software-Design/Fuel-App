@@ -38,7 +38,7 @@ class quoteForm(FlaskForm):
     rate = DecimalField("Price per Gallon:", validators = [Optional()])
     total = DecimalField("Total Amount:", validators = [Optional()])
     submit = SubmitField(label="Submit")
-    calQuote = SubmitField(label="Calculate")
+    calQuote = SubmitField(label="Get Quote")
 
 class profileForm(FlaskForm):
     name = StringField('Name: ', validators = [DataRequired(), Length(min=3, max =50)])

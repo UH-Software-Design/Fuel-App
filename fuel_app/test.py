@@ -209,6 +209,14 @@ class FlaskTestCases(unittest.TestCase):
         response = tester.get('/quote',content_type='html/text', follow_redirects=True)
         self.assertIn(b'Change Profile', response.data)
 
+    def test_if_quote_calculates_and_fills_fields(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='123456'), follow_redirects=True)
+
 
 
 
