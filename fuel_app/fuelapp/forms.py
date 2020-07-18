@@ -7,6 +7,7 @@ from wtforms.widgets.html5 import NumberInput
 from fuelapp.models import User
 
 
+
 class registrationForm(FlaskForm):
     username = StringField('Username', validators =[DataRequired(), Length(min = 2, max = 25)])
     email = EmailField('E-mail', validators = [DataRequired(), Email()])
