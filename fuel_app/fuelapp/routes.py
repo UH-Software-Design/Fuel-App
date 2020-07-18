@@ -53,18 +53,23 @@ def quote():
     concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
     form.deliveryAddress.data = concatAdd
 
-    if form.validate_on_submit():
+    #if user presses the calculate button grab the quote
+    if form.validate_on_submit() and form.calQuote.data:
         gallonsReq = form.gallonsRequested.data
         suggestRate, total = calculateRateAndTotal(gallonsReq)
         form.rate.raw_data = [suggestRate]
         form.total.raw_data = [total]
-        flash('Quote was calculated!', "success")
+        flash("Your quote has been calculated", "success")
 
-        if form.submit.data:
-            quote = Quote(gallonsRequest = gallonsReq, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = suggestRate, totalAmt = total, user_id = current_user.id)
-            db.session.add(quote)
-            db.session.commit()
-            flash('Your quote was submitted!', "success")
+    #if user has a already calculated a quote then the submit button will store quote in db
+    elif form.validate_on_submit() and form.submit.data and form.total.data!= None:
+        quote = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = form.rate.data, totalAmt = form.total.data, userQ = current_user)
+        db.session.add(quote)
+        db.session.commit()
+        flash('Your quote was submitted!', "success")
+    #Tell user to calculate quote prior to submitting. Buttons basically disabled    
+    elif form.submit.data and form.total.data== None: 
+        flash("Please calculate quote before submitting", "danger")
     return render_template('quote.html', title = 'Get your quote', form = form)
 
 def calculateRateAndTotal(amtRequested):
@@ -97,7 +102,6 @@ def profile():
     form = profileForm()
 
     if not current_user.profile:
-        # form = profileForm()
         if form.validate_on_submit():
             if not current_user.profile:
                 info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data

@@ -35,8 +35,8 @@ class quoteForm(FlaskForm):
     gallonsRequested = IntegerField('Gallons Requested: ', validators = [DataRequired(), NumberRange(min = 50, max = 3500)], widget=NumberInput(min = 0, max = 3501))
     deliveryDate = DateField('Delivery Date:', format = '%Y-%m-%d', validators = [DataRequired(message="You need to enter a date")])
     deliveryAddress = StringField('Delivery address: ', validators = [DataRequired("Update your profile with an address")])
-    rate = DecimalField("Price per Gallon:", validators = [Optional()])
-    total = DecimalField("Total Amount:", validators = [Optional()])
+    rate = DecimalField("Price per Gallon:", places = 2, validators = [Optional()])
+    total = DecimalField("Total Amount:", places =2, validators = [Optional()])
     submit = SubmitField(label="Submit")
     calQuote = SubmitField(label="Get Quote")
 
