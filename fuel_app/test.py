@@ -155,7 +155,6 @@ class FlaskTestCases(unittest.TestCase):
             profile = Profile(name="bob", address1="Sample Drive", address2="", city="Houston",state="TX", zipcode="77777", user_id=current_user.id)
             db.session.add(profile)
             db.session.commit()
-
             response = tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
             self.assertIn(b'Get Your Quote', response.data)
 
@@ -209,13 +208,47 @@ class FlaskTestCases(unittest.TestCase):
         response = tester.get('/quote',content_type='html/text', follow_redirects=True)
         self.assertIn(b'Change Profile', response.data)
 
+    def test_initial_profile_submission(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        response = tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="TX",zipcode='45454'), follow_redirects=True)
+        self.assertIn(b'Your information has been saved', response.data)
+
+    def test_profile_update(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='45454'), follow_redirects=True)
+        response = tester.post('/profile',data=dict(name="bobby",address1='123456123456',address2="789456789456",city="Houston",state="TX",zipcode='45454'), follow_redirects=True)
+
+        self.assertIn(b'Your profile has been updated', response.data)
+
     def test_if_quote_calculates_and_fills_fields(self):
         tester=app.test_client(self)
         db.drop_all()
         db.create_all()
         tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
         tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
-        response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='123456'), follow_redirects=True)
+        tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='45454'), follow_redirects=True)
+        response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',calQuote="True"), follow_redirects=True)
+        self.assertIn(b'Your quote has been calculated', response.data)
+
+    def test_if_quote_calculates_and_submits(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='45454'), follow_redirects=True)
+        tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',calQuote="True"))#, follow_redirects=True
+        response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',submit="True"), follow_redirects=True)
+        self.assertIn(b'Your quote was submitted!', response.data)
+
 
 
 

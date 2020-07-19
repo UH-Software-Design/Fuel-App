@@ -25,6 +25,7 @@ def home():
     # print(form.errors.items())
     return render_template('home.html', title = 'Login', form = form)
 
+
 @app.route('/registration', methods = ['GET', 'POST'])
 def registration():
     if current_user.is_authenticated:
@@ -42,59 +43,6 @@ def registration():
         return redirect(url_for('home'))
     return render_template('register.html', title = 'Register', form = form)
 
-@app.route('/quote', methods = ['GET', 'POST'])
-@login_required
-def quote():
-    form = quoteForm()
-    checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
-    if checkProfile == None:
-        return redirect(url_for('profile'))
-
-    concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
-    form.deliveryAddress.data = concatAdd
-
-    #if user presses the calculate button grab the quote
-    if form.validate_on_submit() and form.calQuote.data:
-        gallonsReq = form.gallonsRequested.data
-        suggestRate, total = calculateRateAndTotal(gallonsReq)
-        form.rate.raw_data = [suggestRate]
-        form.total.raw_data = [total]
-        flash("Your quote has been calculated", "success")
-
-    #if user has a already calculated a quote then the submit button will store quote in db
-    elif form.validate_on_submit() and form.submit.data and form.total.data!= None:
-        quote = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = form.rate.data, totalAmt = form.total.data, userQ = current_user)
-        db.session.add(quote)
-        db.session.commit()
-        flash('Your quote was submitted!', "success")
-    #Tell user to calculate quote prior to submitting. Buttons basically disabled    
-    elif form.submit.data and form.total.data== None: 
-        flash("Please calculate quote before submitting", "danger")
-    return render_template('quote.html', title = 'Get your quote', form = form)
-
-def calculateRateAndTotal(amtRequested):
-
-    basePrice = 1.50
-    companyProfitFactor = 0.10
-
-    if current_user.profileObj.state == "TX":
-        locationFactor = 0.02
-    else:
-        locationFactor = 0.04
-    if current_user.quote:
-        rateHistory = 0.01
-    else:
-        rateHistory = 0.00
-    if amtRequested >= 1000:
-        amtFactor = 0.02
-    else:
-        amtFactor = 0.03
-
-    margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
-    suggestedRate = basePrice + margin
-    total = suggestedRate * amtRequested
-
-    return suggestedRate, total
 
 @app.route('/profile', methods = ['GET', 'POST'])
 @login_required
@@ -148,6 +96,63 @@ def profile():
     #         flash(f'Your profile has been updated', 'success')
 
     return render_template('profile.html', title = 'Personalize', form = form)
+
+
+@app.route('/quote', methods = ['GET', 'POST'])
+@login_required
+def quote():
+    form = quoteForm()
+    checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+    if checkProfile == None:
+        return redirect(url_for('profile'))
+
+    concatAdd = current_user.profileObj.address1+" "+current_user.profileObj.address2 +" "+current_user.profileObj.city+" "+str(current_user.profileObj.zipcode)+" "+current_user.profileObj.state
+    form.deliveryAddress.data = concatAdd
+
+    #If user presses the calculate button grab the quote
+    if form.validate_on_submit() and form.calQuote.data:
+        gallonsReq = form.gallonsRequested.data
+        suggestRate, total = calculateRateAndTotal(gallonsReq)
+        form.rate.raw_data = [suggestRate]
+        form.total.raw_data = [total]
+        flash("Your quote has been calculated", "success")
+
+    #If user has a already calculated a quote then the submit button will store quote in db
+    elif form.validate_on_submit() and form.submit.data and form.total.data != None:
+        quote = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = form.rate.data, totalAmt = form.total.data, userQ = current_user)
+        db.session.add(quote)
+        db.session.commit()
+        flash('Your quote has been saved', "success")
+    #Tell user to calculate quote prior to submitting. Buttons basically disabled
+    elif form.submit.data and form.total.data== None:
+        flash("Please calculate quote before submitting", "danger")
+    return render_template('quote.html', title = 'Get your quote', form = form)
+
+
+def calculateRateAndTotal(amtRequested):
+
+    basePrice = 1.50
+    companyProfitFactor = 0.10
+
+    if current_user.profileObj.state == "TX":
+        locationFactor = 0.02
+    else:
+        locationFactor = 0.04
+    if current_user.quote:
+        rateHistory = 0.01
+    else:
+        rateHistory = 0.00
+    if amtRequested >= 1000:
+        amtFactor = 0.02
+    else:
+        amtFactor = 0.03
+
+    margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
+    suggestedRate = basePrice + margin
+    total = suggestedRate * amtRequested
+
+    return suggestedRate, total
+
 
 @app.route('/history', methods = ['GET', 'POST'])
 @login_required
