@@ -116,14 +116,13 @@ def quote():
         form.rate.raw_data = [suggestRate]
         form.total.raw_data = [total]
         flash("Your quote has been calculated", "success")
-
     #If user has a already calculated a quote then the submit button will store quote in db
     elif form.validate_on_submit() and form.submit.data and form.total.data != None:
-        quote = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = form.rate.data, totalAmt = form.total.data, userQ = current_user)
+        quote = Quote(gallonsRequest = form.gallonsRequested.data, deliveryDate = form.deliveryDate.data, address = concatAdd, rate = form.rate.data, totalAmt = form.total.data, user_id = current_user.id)
         db.session.add(quote)
         db.session.commit()
         flash('Your quote has been saved', "success")
-    #Tell user to calculate quote prior to submitting. Buttons basically disabled
+    #Tell user to calculate quote prior to submitting. Button are disabled
     elif form.submit.data and form.total.data== None:
         flash("Please calculate quote before submitting", "danger")
     return render_template('quote.html', title = 'Get your quote', form = form)
@@ -148,8 +147,8 @@ def calculateRateAndTotal(amtRequested):
         amtFactor = 0.03
 
     margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
-    suggestedRate = basePrice + margin
-    total = suggestedRate * amtRequested
+    suggestedRate = round((basePrice + margin),2)
+    total = round((suggestedRate * amtRequested),2)
 
     return suggestedRate, total
 

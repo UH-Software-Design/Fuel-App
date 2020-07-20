@@ -4,6 +4,7 @@ from fuelapp import db
 from fuelapp.models import User, Profile, Quote
 from fuelapp import bcrypt
 from flask_login import login_user, current_user
+from fuelapp.routes import calculateRateAndTotal
 
 
 class FlaskTestCases(unittest.TestCase):
@@ -238,16 +239,94 @@ class FlaskTestCases(unittest.TestCase):
         response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',calQuote="True"), follow_redirects=True)
         self.assertIn(b'Your quote has been calculated', response.data)
 
-    def test_if_quote_calculates_and_submits(self):
+    def test_if_quote_fails_to_calculate_before_submission(self):
         tester=app.test_client(self)
         db.drop_all()
         db.create_all()
         tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
         tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
         tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='45454'), follow_redirects=True)
-        tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',calQuote="True"))#, follow_redirects=True
         response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',submit="True"), follow_redirects=True)
-        self.assertIn(b'Your quote was submitted!', response.data)
+        self.assertIn(b'Please calculate quote before submitting', response.data)
+
+
+    def test_if_quote_submits(self):
+        tester=app.test_client(self)
+        db.drop_all()
+        db.create_all()
+        tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+        tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+        tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='45454'), follow_redirects=True)
+        response = tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',deliveryAddress="123456123456 Sample Drive",rate="2.00",total="1092",submit="True"), follow_redirects=True)
+        self.assertIn(b'Your quote has been saved', response.data)
+
+
+    def test_rate_for_new_texans_with_less_than_1000_gallons(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            login_user(User.query.first())
+            tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Houston",state="TX",zipcode='77777'), follow_redirects=True)
+            suggestRate, total = calculateRateAndTotal(546)
+            self.assertEqual(suggestRate,1.73)
+            self.assertEqual(total,944.58)
+
+    def test_rate_for_new_texans_with_more_than_1000_gallons(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            login_user(User.query.first())
+            tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Houston",state="TX",zipcode='77777'), follow_redirects=True)
+            suggestRate, total = calculateRateAndTotal(1000)
+            self.assertEqual(suggestRate,1.71)
+            self.assertEqual(total,1710)
+
+    def test_rate_for_old_texans_with_less_than_1000_gallons(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            login_user(User.query.first())
+            tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Houston",state="TX",zipcode='77777'), follow_redirects=True)
+            tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',deliveryAddress="123456123456 Sample Drive",rate="2.00",total="1092",submit="True"), follow_redirects=True)
+            suggestRate, total = calculateRateAndTotal(784)
+            self.assertEqual(suggestRate,1.71)
+            self.assertEqual(total,1340.64)
+
+    def test_rate_for_old_texans_with_more_than_1000_gallons(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            login_user(User.query.first())
+            tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Houston",state="TX",zipcode='77777'), follow_redirects=True)
+            tester.post('/quote',data=dict(gallonsRequested="546",deliveryDate='2020-07-20',deliveryAddress="123456123456 Sample Drive",rate="2.00",total="1092",submit="True"), follow_redirects=True)
+            suggestRate, total = calculateRateAndTotal(2002)
+            self.assertEqual(suggestRate,1.7)
+            self.assertEqual(total,3403.4)
+
+    def test_rate_for_non_new_texans_with_less_than_1000_gallons(self):
+        with app.test_request_context():
+            tester=app.test_client(self)
+            db.drop_all()
+            db.create_all()
+            tester.post('/registration',data=dict(username='bob', email='bob@gmail.com', password='123456', confirm_password='123456'))
+            tester.post('/home',data=dict(username="bob",password='123456'), follow_redirects=True)
+            login_user(User.query.first())
+            tester.post('/profile',data=dict(name="bob",address1='123456123456',address2="789456789456",city="Denver",state="CO",zipcode='80228'), follow_redirects=True)
+            suggestRate, total = calculateRateAndTotal(811)
+            self.assertEqual(suggestRate,1.76)
+            self.assertEqual(total,1427.36)
 
 
 
