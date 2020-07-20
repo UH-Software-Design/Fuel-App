@@ -49,34 +49,62 @@ def registration():
 def profile():
     form = profileForm()
 
-    if not current_user.profile:
-        if form.validate_on_submit():
-            if not current_user.profile:
-                info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-                ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id = current_user.id)
-                db.session.add(info)
-                db.session.commit()
-                flash('Your information has been saved', 'success')
-    else:
-        #When I add the form data, the DB stops saving for some reason
-        # form.name.data = current_user.profileObj.name
-        # form.address1.data = current_user.profileObj.address1
-        # form.address2.data = current_user.profileObj.address2
-        # form.city.data = current_user.profileObj.city
-        # form.state.data = current_user.profileObj.state
-        # form.zipcode.data = current_user.profileObj.zipcode
-        # user = User.query.get(1)
-        # form = profileForm(obj=current_user.profile)
-
-        if form.validate_on_submit():
-            current_user.profileObj.name = form.name.data
-            current_user.profileObj.address1 = form.address1.data
-            current_user.profileObj.address2= form.address2.data
-            current_user.profileObj.city = form.city.data
-            current_user.profileObj.state = form.state.data
-            current_user.profileObj.zipcode= form.zipcode.data
+    checkProfile = Profile.query.filter_by(user_id = current_user.id).first()
+    if checkProfile != None: #if profile exists
+        if form.validate_on_submit(): # update database with new info
+            checkProfile.name = form.name.data
+            checkProfile.address1 = form.address1.data
+            checkProfile.address2 = form.address2.data
+            checkProfile.city = form.city.data
+            checkProfile.state = form.state.data
+            checkProfile.zipcode = form.zipcode.data
             db.session.commit()
-            flash(f'Your profile has been updated', 'success')
+            flash('Your information has been saved', 'success')
+        elif request.method == 'GET': # Populate fields from database
+            form.name.data = checkProfile.name
+            form.address1.data = checkProfile.address1
+            form.address2.data = checkProfile.address2
+            form.city.data = checkProfile.city
+            form.state.data = checkProfile.state
+            form.zipcode.data = checkProfile.zipcode
+    elif checkProfile == None: #if profile doesn't exist. Create a new entry
+        if form.validate_on_submit():
+            info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+            ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id = current_user.id)
+            db.session.add(info)
+            db.session.commit()
+            flash('Your information has been saved', 'success')
+
+
+
+    # if not current_user.profile:
+    #     if form.validate_on_submit():
+    #         if not current_user.profile:
+    #             info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
+    #             ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id = current_user.id)
+    #             db.session.add(info)
+    #             db.session.commit()
+    #             flash('Your information has been saved', 'success')
+    # else:
+    #     #When I add the form data, the DB stops saving for some reason
+    #     # form.name.data = current_user.profileObj.name
+    #     # form.address1.data = current_user.profileObj.address1
+    #     # form.address2.data = current_user.profileObj.address2
+    #     # form.city.data = current_user.profileObj.city
+    #     # form.state.data = current_user.profileObj.state
+    #     # form.zipcode.data = current_user.profileObj.zipcode
+    #     # user = User.query.get(1)
+    #     # form = profileForm(obj=current_user.profile)
+
+    #     if form.validate_on_submit():
+    #         current_user.profileObj.name = form.name.data
+    #         current_user.profileObj.address1 = form.address1.data
+    #         current_user.profileObj.address2= form.address2.data
+    #         current_user.profileObj.city = form.city.data
+    #         current_user.profileObj.state = form.state.data
+    #         current_user.profileObj.zipcode= form.zipcode.data
+    #         db.session.commit()
+    #         flash(f'Your profile has been updated', 'success')
 
     # if form.validate_on_submit():
     #     if not current_user.profile:
