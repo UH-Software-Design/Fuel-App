@@ -59,7 +59,7 @@ def profile():
             checkProfile.state = form.state.data
             checkProfile.zipcode = form.zipcode.data
             db.session.commit()
-            flash('Your information has been saved', 'success')
+            flash('Your profile has been updated', 'success')
         elif request.method == 'GET': # Populate fields from database
             form.name.data = checkProfile.name
             form.address1.data = checkProfile.address1
