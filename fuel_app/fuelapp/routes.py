@@ -3,6 +3,7 @@ from fuelapp import app, db, bcrypt
 from fuelapp.forms import registrationForm, loginForm, quoteForm, profileForm
 from fuelapp.models import User, Profile, Quote
 from flask_login import login_user, current_user, logout_user, login_required
+from decimal import Decimal
 
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -74,55 +75,6 @@ def profile():
             db.session.add(info)
             db.session.commit()
             flash('Your information has been saved', 'success')
-
-
-
-    # if not current_user.profile:
-    #     if form.validate_on_submit():
-    #         if not current_user.profile:
-    #             info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-    #             ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, user_id = current_user.id)
-    #             db.session.add(info)
-    #             db.session.commit()
-    #             flash('Your information has been saved', 'success')
-    # else:
-    #     #When I add the form data, the DB stops saving for some reason
-    #     # form.name.data = current_user.profileObj.name
-    #     # form.address1.data = current_user.profileObj.address1
-    #     # form.address2.data = current_user.profileObj.address2
-    #     # form.city.data = current_user.profileObj.city
-    #     # form.state.data = current_user.profileObj.state
-    #     # form.zipcode.data = current_user.profileObj.zipcode
-    #     # user = User.query.get(1)
-    #     # form = profileForm(obj=current_user.profile)
-
-    #     if form.validate_on_submit():
-    #         current_user.profileObj.name = form.name.data
-    #         current_user.profileObj.address1 = form.address1.data
-    #         current_user.profileObj.address2= form.address2.data
-    #         current_user.profileObj.city = form.city.data
-    #         current_user.profileObj.state = form.state.data
-    #         current_user.profileObj.zipcode= form.zipcode.data
-    #         db.session.commit()
-    #         flash(f'Your profile has been updated', 'success')
-
-    # if form.validate_on_submit():
-    #     if not current_user.profile:
-    #         info = Profile(name = form.name.data, address1 = form.address1.data, address2 = form.address2.data
-    #         ,city = form.city.data, state = form.state.data, zipcode = form.zipcode.data, userObjProfile= current_user)
-    #         db.session.add(info)
-    #         db.session.commit()
-    #         flash('Your information has been saved', 'success')
-    #     else:
-    #         current_user.profileObj.name = form.name.data
-    #         current_user.profileObj.address1 = form.address1.data
-    #         current_user.profileObj.address2= form.address2.data
-    #         current_user.profileObj.city = form.city.data
-    #         current_user.profileObj.state = form.state.data
-    #         current_user.profileObj.zipcode= form.zipcode.data
-    #         db.session.commit()
-    #         flash(f'Your profile has been updated', 'success')
-
     return render_template('profile.html', title = 'Personalize', form = form)
 
 
@@ -155,28 +107,29 @@ def quote():
         flash("Please calculate quote before submitting", "danger")
     return render_template('quote.html', title = 'Get your quote', form = form)
 
-
 def calculateRateAndTotal(amtRequested):
 
-    basePrice = 1.50
-    companyProfitFactor = 0.10
+    basePrice = Decimal('1.50')
+    companyProfitFactor = Decimal('0.10')
+    gallons = Decimal(str(amtRequested))
 
     if current_user.profileObj.state == "TX":
-        locationFactor = 0.02
+        locationFactor = Decimal('0.02')
     else:
-        locationFactor = 0.04
+        locationFactor = Decimal('0.04')
     if current_user.quote:
-        rateHistory = 0.01
+        rateHistory = Decimal('0.01')
     else:
-        rateHistory = 0.00
+        rateHistory = Decimal('0.00')
     if amtRequested >= 1000:
-        amtFactor = 0.02
+        amtFactor = Decimal('0.02')
     else:
-        amtFactor = 0.03
+        amtFactor = Decimal('0.03')
 
     margin = basePrice * (locationFactor-rateHistory+amtFactor+companyProfitFactor)
     suggestedRate = round((basePrice + margin),2)
-    total = round((suggestedRate * amtRequested),2)
+    total = round((suggestedRate * gallons),2)
+
 
     return suggestedRate, total
 

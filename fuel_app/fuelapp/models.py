@@ -24,7 +24,7 @@ class Quote(db.Model):
     deliveryDate = db.Column(db.Date, nullable = False)
     address = db.Column(db.String(200), nullable =False)
     rate = db.Column(db.Float, nullable = False)
-    totalAmt = db.Column(db.Float, nullable = False)
+    totalAmt = db.Column(db.Float(asdecimal=True), nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
